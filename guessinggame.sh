@@ -1,25 +1,33 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-
-n1=$[($RANDOM % 10 +1)]
-n3=1
-echo -n "The files are between 1 and 10. Your guess:"
-
-while read n2; 
-do
-if   [[ $n2 = $n1 ]]; then
-break;  
-else    
-if [[ $n2 < $n1 ]]; 
-then 
-echo -n "Sorry, your guess is too low. New guess:"
-elif [[ $n2 > $n1 ]]; 
-then
-echo -n "Sorry, your guess is too high. New guess:"
-fi      
+function input_check {
+read response
+if ! [[ "$response" =~ ^[0-9]+$ ]]
+then echo "Wrong user input. Please enter decimal integer:"
+     input_check
 fi
-n3=$((n3 + 1))
+}
 
+function compare_values {
+	if [[ $response -gt $actual_value ]]
+then
+	echo "There are not that many files. Please try again:"
+	input_check
+elif [[ $response -lt $actual_value ]]
+then
+	echo "You're wrong, there are more files exist in this directory. Please try again:"
+	input_check
+fi
+}
+
+echo "How many files are in current directory? Please type in an integer:"
+input_check
+
+actual_value=$(ls | wc -l)
+
+while [[ $response -ne $actual_value ]]
+do
+compare_values
 done
-echo
-echo "Felicidad! It took you $n3 times to get the right number of files."
+
+echo "It seems to be a case that you are right this time: Number of files is $actual_value and you have entered $response! Good job!"
